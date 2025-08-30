@@ -2,6 +2,7 @@ const express = require('express');
 const { McpServer } = require('@modelcontextprotocol/sdk/server/mcp.js');
 const { StreamableHTTPServerTransport } = require('@modelcontextprotocol/sdk/server/streamableHttp.js');
 const { z } = require('zod');
+const sqlite3 = require('sqlite3').verbose();
 
 // Load environment variables
 require('dotenv').config();
@@ -16,31 +17,42 @@ const server = new McpServer({
   version: '1.0.0',
 });
 
-// In-memory storage for movies (in a real application, this would be a database)
-// Initialize with the existing movies to preserve them
-const movies = {
-  'The Matrix': {
-    title: 'The Matrix',
-    year: 1999,
-    director: 'The Wachowskis',
-    genre: 'Science Fiction',
-    rating: 8.7,
-  },
-  'Inception': {
-    title: 'Inception',
-    year: 2010,
-    director: 'Christopher Nolan',
-    genre: 'Science Fiction',
-    rating: 8.8,
-  },
-  'The Godfather': {
-    title: 'The Godfather',
-    year: 1972,
-    director: 'Francis Ford Coppola',
-    genre: 'Crime Drama',
-    rating: 9.2,
-  },
-};
+// Initialize SQLite database
+const db = new sqlite3.Database('./movies.db');
+
+// Create movies table if it doesn't exist
+db.serialize(() => {
+  db.run(`CREATE TABLE IF NOT EXISTS movies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT UNIQUE NOT NULL,
+    year INTEGER NOT NULL,
+    director TEXT NOT NULL,
+    genre TEXT NOT NULL,
+    rating REAL NOT NULL
+  )`);
+  
+  // Insert initial movies if table is empty
+  const initializeMovies = () => {
+    const initialMovies = [
+      { title: 'The Matrix', year: 1999, director: 'The Wachowskis', genre: 'Science Fiction', rating: 8.7 },
+      { title: 'Inception', year: 2010, director: 'Christopher Nolan', genre: 'Science Fiction', rating: 8.8 },
+      { title: 'The Godfather', year: 1972, director: 'Francis Ford Coppola', genre: 'Crime Drama', rating: 9.2 }
+    ];
+    
+    db.get("SELECT COUNT(*) as count FROM movies", (err, row) => {
+      if (row.count === 0) {
+        const stmt = db.prepare("INSERT INTO movies (title, year, director, genre, rating) VALUES (?, ?, ?, ?, ?)");
+        initialMovies.forEach(movie => {
+          stmt.run(movie.title, movie.year, movie.director, movie.genre, movie.rating);
+        });
+        stmt.finalize();
+        console.log("Initialized database with default movies");
+      }
+    });
+  };
+  
+  initializeMovies();
+});
 
 // Register a tool to add a new movie
 server.registerTool(
@@ -56,35 +68,48 @@ server.registerTool(
     },
   },
   async ({ title, year, director, genre, rating }) => {
-    // Check if movie already exists
-    if (movies[title]) {
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `Movie "${title}" already exists in the database.`,
-          },
-        ],
-      };
-    }
+    return new Promise((resolve, reject) => {
+      // Check if movie already exists
+      db.get("SELECT * FROM movies WHERE title = ?", [title], (err, row) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        
+        if (row) {
+          resolve({
+            content: [
+              {
+                type: 'text',
+                text: `Movie "${title}" already exists in the database.`,
+              },
+            ],
+          });
+          return;
+        }
 
-    // Add the new movie
-    movies[title] = {
-      title,
-      year,
-      director,
-      genre,
-      rating,
-    };
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `Movie "${title}" successfully added to the database.`,
-        },
-      ],
-    };
+        // Add the new movie
+        db.run(
+          "INSERT INTO movies (title, year, director, genre, rating) VALUES (?, ?, ?, ?, ?)",
+          [title, year, director, genre, rating],
+          function(err) {
+            if (err) {
+              reject(err);
+              return;
+            }
+            
+            resolve({
+              content: [
+                {
+                  type: 'text',
+                  text: `Movie "${title}" successfully added to the database.`,
+                },
+              ],
+            });
+          }
+        );
+      });
+    });
   }
 );
 
@@ -98,26 +123,34 @@ server.registerTool(
     },
   },
   async ({ title }) => {
-    const movie = movies[title];
-    if (movie) {
-      return {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify(movie, null, 2),
-          },
-        ],
-      };
-    } else {
-      return {
-        content: [
-          {
-            type: 'text',
-            text: `Movie "${title}" not found in the database.`,
-          },
-        ],
-      };
-    }
+    return new Promise((resolve, reject) => {
+      db.get("SELECT * FROM movies WHERE title = ?", [title], (err, row) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        
+        if (row) {
+          return resolve({
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(row, null, 2),
+              },
+            ],
+          });
+        } else {
+          return resolve({
+            content: [
+              {
+                type: 'text',
+                text: `Movie "${title}" not found in the database.`,
+              },
+            ],
+          });
+        }
+      });
+    });
   }
 );
 
@@ -129,16 +162,24 @@ server.registerTool(
     inputSchema: {},
   },
   async () => {
-    const movieList = Object.keys(movies);
-    
-    return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify(movieList, null, 2),
-        },
-      ],
-    };
+    return new Promise((resolve, reject) => {
+      db.all("SELECT title FROM movies", [], (err, rows) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        
+        const movieList = rows.map(row => row.title);
+        return resolve({
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(movieList, null, 2),
+            },
+          ],
+        });
+      });
+    });
   }
 );
 
@@ -180,6 +221,22 @@ app.all('/mcp', async (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 const HOST = process.env.NODE_ENV === 'development' ? 'localhost' : '0.0.0.0';
-app.listen(PORT, HOST, () => {
+const serverInstance = app.listen(PORT, HOST, () => {
   console.log(`MCP Movies Server running on http://${HOST}:${PORT}`);
+});
+
+// Graceful shutdown
+process.on('SIGINT', () => {
+  console.log('\nShutting down server...');
+  db.close((err) => {
+    if (err) {
+      console.error('Error closing database:', err);
+    } else {
+      console.log('Database connection closed.');
+    }
+    serverInstance.close(() => {
+      console.log('Server closed.');
+      process.exit(0);
+    });
+  });
 });
