@@ -72,6 +72,26 @@ The server uses environment variables for configuration:
 
 Copy `.env.example` to `.env` and modify as needed for local development.
 
+## Testing the Server
+
+To test the MCP tools provided by this server:
+
+1. Start the server in development mode:
+   ```bash
+   npm run dev
+   ```
+
+2. From the root of the repository, use the Qwen CLI to test the tools:
+   ```bash
+   # List all movies
+   qwen --prompt "List all movies in the database" --yolo
+   
+   # Get information about a specific movie
+   qwen --prompt "Get information about The Matrix movie" --yolo
+   ```
+
+The Qwen CLI will automatically connect to the server using the configuration in `.qwen/settings.json` and execute the appropriate MCP tools.
+
 ## Network Configuration
 
 - In development mode, binds to `localhost` only

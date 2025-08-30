@@ -42,29 +42,45 @@ No password is required for this connection.
 
 ## Usage
 
+To use the MCP tools, you need to use the Qwen CLI with natural language prompts that will trigger the appropriate tools:
+
 ### Production Usage
-To use the tools with the production server, simply use the Qwen CLI:
+To use the tools with the production server:
 
 ```bash
-# List all movies
-/list_movies
+# Navigate to the client directory to use production settings
+cd client
 
-# Get information about a specific movie
-/get_movie_info "The Matrix"
+# List all movies (this will use the list_movies MCP tool)
+qwen --prompt "List all movies in the database" --yolo
+
+# Get information about a specific movie (this will use the get_movie_info MCP tool)
+qwen --prompt "Get information about The Matrix movie" --yolo
 ```
 
 ### Development Usage
 For local development:
 
 1. Start the server locally: `cd ../server && npm run dev`
-2. Use the Qwen CLI with the local settings in the root `.qwen/settings.json`:
+2. Use the Qwen CLI from the root directory (uses local settings):
    ```bash
    # List all movies
-   /list_movies
+   qwen --prompt "List all movies in the database" --yolo
    
    # Get information about a specific movie
-   /get_movie_info "The Matrix"
+   qwen --prompt "Get information about The Matrix movie" --yolo
    ```
+
+### How it works
+
+When you use the Qwen CLI with prompts:
+1. The CLI connects to the MCP server configured in `.qwen/settings.json`
+2. The MCP server exposes the `list_movies` and `get_movie_info` tools
+3. The Qwen model determines which tool to use based on your prompt
+4. The tool is executed on the MCP server
+5. Results are returned to the Qwen CLI and displayed
+
+Note: The `--yolo` flag automatically accepts tool execution without confirmation. For interactive use, you can run `qwen` without flags and ask questions naturally.
 
 ## Documentation
 

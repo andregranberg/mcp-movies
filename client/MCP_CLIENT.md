@@ -68,10 +68,41 @@ Server files are located at: `/home/ay/apps/mcp-movies-server`
 Once connected, the following tools are available:
 
 1. **list_movies** - Lists all movies in the database
-   - Usage: `/list_movies`
-
 2. **get_movie_info** - Gets detailed information about a specific movie
-   - Usage: `/get_movie_info "Movie Title"`
+
+## Using the MCP Tools
+
+To use the MCP tools, you need to use the Qwen CLI with natural language prompts. The Qwen model will automatically determine which tool to use based on your request.
+
+### Production Usage
+```bash
+# Navigate to the client directory to use production settings
+cd client
+
+# List all movies in the database
+qwen --prompt "List all movies in the database" --yolo
+
+# Get detailed information about a specific movie
+qwen --prompt "Get information about The Matrix movie" --yolo
+```
+
+### Development Usage
+```bash
+# Start the server in development mode (in another terminal)
+cd ../server && npm run dev
+
+# From the root directory, use the local settings
+qwen --prompt "List all movies in the database" --yolo
+qwen --prompt "Get information about Inception movie" --yolo
+```
+
+### How it Works
+1. The Qwen CLI connects to the MCP server using the configuration in `.qwen/settings.json`
+2. When you provide a prompt, the Qwen model analyzes it to determine which tool to use
+3. The appropriate MCP tool (`list_movies` or `get_movie_info`) is executed on the server
+4. The results are returned to the Qwen CLI and displayed
+
+Note: The `--yolo` flag automatically accepts tool execution without confirmation. For interactive use, you can run `qwen` without flags and ask questions naturally.
 
 ## Testing the Connection
 
@@ -85,11 +116,8 @@ cd client
 # List all configured MCP servers and their status
 qwen mcp list
 
-# Test the list_movies tool
-echo "/list_movies" | qwen
-
-# Test the get_movie_info tool
-echo "/get_movie_info The Matrix" | qwen
+# Test by asking for the list of movies
+qwen --prompt "List all movies in the database" --yolo
 ```
 
 ### Development Testing
@@ -100,8 +128,7 @@ For local development testing:
 cd ../server && npm run dev
 
 # Test from the root directory (uses local settings)
-/list_movies
-/get_movie_info "The Matrix"
+qwen --prompt "List all movies in the database" --yolo
 ```
 
 ## Troubleshooting

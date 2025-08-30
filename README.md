@@ -53,15 +53,26 @@ No password is required for this connection.
 
 ## Usage
 
-To use the tools, simply use the Qwen CLI:
+To use the tools, you need to use the Qwen CLI with prompts that will trigger the MCP tools:
 
 ```bash
-# List all movies
-/list_movies
+# List all movies (using the list_movies MCP tool)
+qwen --prompt "List all movies in the database" --yolo
 
-# Get information about a specific movie
-/get_movie_info "The Matrix"
+# Get information about a specific movie (using the get_movie_info MCP tool)
+qwen --prompt "Get information about The Matrix movie" --yolo
 ```
+
+Note: The `--yolo` flag automatically accepts tool execution without confirmation. For interactive use, you can run `qwen` without flags and ask questions naturally.
+
+### How it works
+
+When you use the Qwen CLI with prompts:
+1. The CLI connects to the MCP server configured in `.qwen/settings.json`
+2. The MCP server exposes the `list_movies` and `get_movie_info` tools
+3. The Qwen model determines which tool to use based on your prompt
+4. The tool is executed on the MCP server
+5. Results are returned to the Qwen CLI and displayed
 
 ## Deployment
 

@@ -27,12 +27,29 @@ This document explains how to develop and test the MCP Movies server locally bef
    - Disable DNS rebinding protection
    - Use development environment settings
 
-3. Test with the Qwen CLI:
-   ```bash
-   # From the root directory
-   /list_movies
-   /get_movie_info "The Matrix"
-   ```
+## Testing Tools
+
+To test your tools, use the Qwen CLI with natural language prompts:
+
+```bash
+# Start the server in development mode (in another terminal)
+npm run dev
+
+# From the root directory, test the tools
+qwen --prompt "List all movies in the database" --yolo
+qwen --prompt "Get information about The Matrix movie" --yolo
+qwen --prompt "Get information about Inception movie" --yolo
+qwen --prompt "Get information about The Godfather movie" --yolo
+```
+
+### How Testing Works
+
+1. The Qwen CLI connects to the MCP server using the configuration in `.qwen/settings.json`
+2. When you provide a prompt, the Qwen model analyzes it to determine which tool to use
+3. The appropriate MCP tool (`list_movies` or `get_movie_info`) is executed on the server
+4. The results are returned to the Qwen CLI and displayed
+
+Note: The `--yolo` flag automatically accepts tool execution without confirmation. For interactive use, you can run `qwen` without flags and ask questions naturally.
 
 ## Environment Variables
 
@@ -54,21 +71,6 @@ ENABLE_DNS_REBINDING_PROTECTION=false
 1. Modify `server/mcp-server-http.js` to add new tools or modify existing ones
 2. Test locally with `npm run dev`
 3. Commit and push changes when ready
-
-## Testing Tools
-
-You can test your tools using the Qwen CLI:
-
-```bash
-# List all movies
-/list_movies
-
-# Get information about a specific movie
-/get_movie_info "The Matrix"
-
-# Test with a movie that doesn't exist
-/get_movie_info "Non-existent Movie"
-```
 
 ## Debugging
 
