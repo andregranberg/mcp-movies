@@ -60,7 +60,7 @@ nohup npm start > server.log 2>&1 &
 
 ## Data Persistence
 
-Currently, movie data is stored in memory and will be lost when the server restarts. This is suitable for development and testing but would need to be changed for production use.
+Movie data is now stored persistently in a SQLite database file (`movies.db`) in the server directory. This means that movie data will persist across server restarts, making it suitable for both development and production use.
 
 ## Development Workflow
 

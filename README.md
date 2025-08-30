@@ -50,7 +50,7 @@ No password is required for this connection.
 
 1. **list_movies** - Lists all movies in the database
 2. **get_movie_info** - Gets detailed information about a specific movie
-3. **add_movie** - Adds a new movie to the database (Note: Data is stored in memory and will be lost when the server restarts)
+3. **add_movie** - Adds a new movie to the database
 
 ## Usage
 
@@ -73,7 +73,7 @@ Note: The `--yolo` flag automatically accepts tool execution without confirmatio
 
 ### Data Persistence
 
-Currently, movie data is stored in memory and will be lost when the server restarts. This is suitable for development and testing but would need to be changed for production use.
+Movie data is now stored persistently in a SQLite database file (`movies.db`) in the server directory. This means that movie data will persist across server restarts, making it suitable for both development and production use.
 
 ### How it works
 
