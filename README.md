@@ -2,6 +2,16 @@
 
 This repository contains both the client and server components for the MCP Movies system.
 
+## ⚠️ IMPORTANT: Understanding MCP
+
+MCP (Model Context Protocol) is fundamental to how this system works. Before working with this repository, please read the [MCP Documentation](mcp_documentation.md) to understand:
+
+- What MCP is and how it enables the Qwen CLI to interact with external tools
+- How the server exposes tools that can be called through the CLI
+- How the client connects to and uses these tools
+
+This is not optional - understanding MCP is essential to using this repository effectively.
+
 ## Overview
 
 This project uses the Qwen CLI with an MCP server to provide movie information tools. The MCP server runs on a Raspberry Pi 24/7.
