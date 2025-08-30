@@ -50,6 +50,7 @@ No password is required for this connection.
 
 1. **list_movies** - Lists all movies in the database
 2. **get_movie_info** - Gets detailed information about a specific movie
+3. **add_movie** - Adds a new movie to the database (Note: Data is stored in memory and will be lost when the server restarts)
 
 ## Usage
 
@@ -61,9 +62,18 @@ qwen --prompt "List all movies in the database" --yolo
 
 # Get information about a specific movie (using the get_movie_info MCP tool)
 qwen --prompt "Get information about The Matrix movie" --yolo
+
+# Add a new movie (using the add_movie MCP tool)
+qwen --prompt "Add a movie called 'Pulp Fiction' released in 1994, directed by Quentin Tarantino, in the Crime Drama genre, with a rating of 8.9" --yolo
 ```
 
 Note: The `--yolo` flag automatically accepts tool execution without confirmation. For interactive use, you can run `qwen` without flags and ask questions naturally.
+
+Note: The `--yolo` flag automatically accepts tool execution without confirmation. For interactive use, you can run `qwen` without flags and ask questions naturally.
+
+### Data Persistence
+
+Currently, movie data is stored in memory and will be lost when the server restarts. This is suitable for development and testing but would need to be changed for production use.
 
 ### How it works
 

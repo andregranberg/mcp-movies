@@ -40,6 +40,7 @@ qwen --prompt "List all movies in the database" --yolo
 qwen --prompt "Get information about The Matrix movie" --yolo
 qwen --prompt "Get information about Inception movie" --yolo
 qwen --prompt "Get information about The Godfather movie" --yolo
+qwen --prompt "Add a movie called 'Pulp Fiction' released in 1994, directed by Quentin Tarantino, in the Crime Drama genre, with a rating of 8.9" --yolo
 ```
 
 ### How Testing Works

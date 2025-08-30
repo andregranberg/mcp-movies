@@ -39,6 +39,7 @@ No password is required for this connection.
 
 1. **list_movies** - Lists all movies in the database
 2. **get_movie_info** - Gets detailed information about a specific movie
+3. **add_movie** - Adds a new movie to the database (Note: Data is stored in memory and will be lost when the server restarts)
 
 ## Usage
 
@@ -69,6 +70,9 @@ For local development:
    
    # Get information about a specific movie
    qwen --prompt "Get information about The Matrix movie" --yolo
+   
+   # Add a new movie
+   qwen --prompt "Add a movie called 'Pulp Fiction' released in 1994, directed by Quentin Tarantino, in the Crime Drama genre, with a rating of 8.9" --yolo
    ```
 
 ### How it works
