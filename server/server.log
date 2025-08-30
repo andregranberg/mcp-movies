@@ -1,0 +1,5 @@
+
+> mymoviesai@1.0.0 start
+> node mcp-server-http.js
+
+MCP Movies Server running on http://0.0.0.0:3001
