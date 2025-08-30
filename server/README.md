@@ -17,10 +17,18 @@ This is an MCP (Model Context Protocol) server that provides movie information t
 
 ## Starting the Server
 
-The server is configured to run automatically. To manually start it:
-
+### Development Mode
 ```bash
-cd /home/ay/apps/mcp-movies-server
+# Install dependencies (first time only)
+npm install
+
+# Start server in development mode (localhost only)
+npm run dev
+```
+
+### Production Mode
+```bash
+# Start server in production mode (all interfaces)
 npm start
 ```
 
@@ -49,13 +57,23 @@ nohup npm start > server.log 2>&1 &
 1. **list_movies** - Returns a list of all movies in the database
 2. **get_movie_info** - Returns detailed information about a specific movie
 
-## Development
+## Development Workflow
 
-To update the server code:
-1. Modify mcp-server-http.js
-2. Restart the server
+1. **Development**: Make changes locally and test with `npm run dev`
+2. **Commit and Push**: Commit changes to GitHub from your main computer
+3. **Deploy**: Pull updates on the Raspberry Pi
+
+### Environment Configuration
+
+The server uses environment variables for configuration:
+- `PORT`: Port to run the server on (default: 3001)
+- `NODE_ENV`: Environment mode (development or production)
+- `ENABLE_DNS_REBINDING_PROTECTION`: Enable DNS rebinding protection in production
+
+Copy `.env.example` to `.env` and modify as needed for local development.
 
 ## Network Configuration
 
-- Binds to 0.0.0.0:3001 to accept connections from any interface
+- In development mode, binds to `localhost` only
+- In production mode, binds to `0.0.0.0` to accept connections from any interface
 - Uses HTTP Streamable transport for efficient communication

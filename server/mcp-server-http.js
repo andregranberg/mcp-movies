@@ -3,6 +3,9 @@ const { McpServer } = require('@modelcontextprotocol/sdk/server/mcp.js');
 const { StreamableHTTPServerTransport } = require('@modelcontextprotocol/sdk/server/streamableHttp.js');
 const { z } = require('zod');
 
+// Load environment variables
+require('dotenv').config();
+
 // Create Express app
 const app = express();
 app.use(express.json());
@@ -114,7 +117,7 @@ app.all('/mcp', async (req, res) => {
       onsessioninitialized: (newSessionId) => {
         transports[newSessionId] = transport;
       },
-      enableDnsRebindingProtection: false, // Set to true in production
+      enableDnsRebindingProtection: process.env.ENABLE_DNS_REBINDING_PROTECTION === 'true',
     });
 
     // Clean up transport when closed
@@ -133,6 +136,7 @@ app.all('/mcp', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`MCP Movies Server running on http://0.0.0.0:${PORT}`);
+const HOST = process.env.NODE_ENV === 'development' ? 'localhost' : '0.0.0.0';
+app.listen(PORT, HOST, () => {
+  console.log(`MCP Movies Server running on http://${HOST}:${PORT}`);
 });

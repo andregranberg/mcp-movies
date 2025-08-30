@@ -4,7 +4,7 @@ This repository contains the client configuration for the MCP (Model Context Pro
 
 ## Overview
 
-This project uses the Qwen CLI with an MCP server to provide movie information tools. The MCP server runs on a Raspberry Pi 24/7, while this repository contains only the client configuration needed to connect to that server.
+This project uses the Qwen CLI with an MCP server to provide movie information tools. The MCP server can run either locally for development or on a Raspberry Pi for production.
 
 ## Repository Structure
 
@@ -12,13 +12,19 @@ This project uses the Qwen CLI with an MCP server to provide movie information t
 - **MCP_SERVER.md** - Documentation for the remote server setup
 - **.qwen/settings.json** - MCP server configuration (connects to Raspberry Pi)
 
-## Server Location
+## Server Locations
 
+### Production Server
 The MCP server runs on a Raspberry Pi with the following specifications:
 - **IP Address**: 192.168.0.242
 - **SSH User**: ay (no password required)
 - **Port**: 3001
 - **Path**: `/home/ay/apps/mcp-movies-server`
+
+### Development Server
+For local development, you can run the server on your local machine:
+- **Address**: localhost
+- **Port**: 3001
 
 ## SSH Access
 
@@ -36,7 +42,8 @@ No password is required for this connection.
 
 ## Usage
 
-To use the tools, simply use the Qwen CLI:
+### Production Usage
+To use the tools with the production server, simply use the Qwen CLI:
 
 ```bash
 # List all movies
@@ -45,6 +52,19 @@ To use the tools, simply use the Qwen CLI:
 # Get information about a specific movie
 /get_movie_info "The Matrix"
 ```
+
+### Development Usage
+For local development:
+
+1. Start the server locally: `cd ../server && npm run dev`
+2. Use the Qwen CLI with the local settings in the root `.qwen/settings.json`:
+   ```bash
+   # List all movies
+   /list_movies
+   
+   # Get information about a specific movie
+   /get_movie_info "The Matrix"
+   ```
 
 ## Documentation
 

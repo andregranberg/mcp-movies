@@ -26,6 +26,17 @@ This project uses the Qwen CLI with an MCP server to provide movie information t
 3. Start the server: `npm start`
 4. The server will run on port 3001
 
+## Development Workflow
+
+For local development and testing:
+
+1. Install dependencies: `cd server && npm install`
+2. Start the server in development mode: `npm run dev`
+3. Test locally using the Qwen CLI with the local settings in `.qwen/settings.json`
+4. Make changes and test iteratively
+5. Commit and push to GitHub when ready
+6. Deploy to the Raspberry Pi
+
 ## SSH Access
 
 To access the Raspberry Pi server:
@@ -57,9 +68,10 @@ To use the tools, simply use the Qwen CLI:
 To deploy updates to the Raspberry Pi:
 
 1. Make changes on your local machine
-2. Commit and push to GitHub
-3. SSH into the Raspberry Pi and pull the latest changes
-4. Restart the server if needed
+2. Test locally with `npm run dev`
+3. Commit and push to GitHub
+4. SSH into the Raspberry Pi and pull the latest changes
+5. Restart the server if needed
 
 ```bash
 # On the Raspberry Pi
