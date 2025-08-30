@@ -61,6 +61,7 @@ No password is required for this connection.
 1. **list_movies** - Lists all movies in the database
 2. **get_movie_info** - Gets detailed information about a specific movie
 3. **add_movie** - Adds a new movie to the database
+4. **update_movie** - Updates information about an existing movie in the database
 
 ## Usage
 
