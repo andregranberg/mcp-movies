@@ -183,6 +183,102 @@ server.registerTool(
   }
 );
 
+// Register a tool to update movie information
+server.registerTool(
+  'update_movie',
+  {
+    description: 'Update information about a movie in the database',
+    inputSchema: {
+      title: z.string().describe('The title of the movie to update'),
+      year: z.number().optional().describe('The updated release year of the movie'),
+      director: z.string().optional().describe('The updated director of the movie'),
+      genre: z.string().optional().describe('The updated genre of the movie'),
+      rating: z.number().optional().describe('The updated rating of the movie (0-10)'),
+    },
+  },
+  async ({ title, year, director, genre, rating }) => {
+    return new Promise((resolve, reject) => {
+      // Check if movie exists
+      db.get("SELECT * FROM movies WHERE title = ?", [title], (err, row) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        
+        if (!row) {
+          resolve({
+            content: [
+              {
+                type: 'text',
+                text: `Movie "${title}" not found in the database.`,
+              },
+            ],
+          });
+          return;
+        }
+
+        // Build the update query dynamically based on provided fields
+        const updates = [];
+        const values = [];
+        
+        if (year !== undefined) {
+          updates.push("year = ?");
+          values.push(year);
+        }
+        
+        if (director !== undefined) {
+          updates.push("director = ?");
+          values.push(director);
+        }
+        
+        if (genre !== undefined) {
+          updates.push("genre = ?");
+          values.push(genre);
+        }
+        
+        if (rating !== undefined) {
+          updates.push("rating = ?");
+          values.push(rating);
+        }
+        
+        // If no fields to update, return success with no changes
+        if (updates.length === 0) {
+          resolve({
+            content: [
+              {
+                type: 'text',
+                text: `No updates provided for movie "${title}".`,
+              },
+            ],
+          });
+          return;
+        }
+        
+        // Add the title to the values for the WHERE clause
+        values.push(title);
+        
+        // Perform the update
+        const query = `UPDATE movies SET ${updates.join(", ")} WHERE title = ?`;
+        db.run(query, values, function(err) {
+          if (err) {
+            reject(err);
+            return;
+          }
+          
+          resolve({
+            content: [
+              {
+                type: 'text',
+                text: `Movie "${title}" successfully updated in the database.`,
+              },
+            ],
+          });
+        });
+      });
+    });
+  }
+);
+
 // Store transports for session management
 const transports = {};
 
