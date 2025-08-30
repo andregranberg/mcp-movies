@@ -69,7 +69,7 @@ qwen --prompt "Add a movie called 'Pulp Fiction' released in 1994, directed by Q
 
 Note: The `--yolo` flag automatically accepts tool execution without confirmation. For interactive use, you can run `qwen` without flags and ask questions naturally.
 
-Note: The `--yolo` flag automatically accepts tool execution without confirmation. For interactive use, you can run `qwen` without flags and ask questions naturally.
+**Direct CLI Usage**: You can run these commands directly in any terminal window while in the repository root directory - no need to go through Qwen Code for simple operations!
 
 ### Data Persistence
 
