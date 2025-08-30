@@ -56,6 +56,11 @@ nohup npm start > server.log 2>&1 &
 
 1. **list_movies** - Returns a list of all movies in the database
 2. **get_movie_info** - Returns detailed information about a specific movie
+3. **add_movie** - Adds a new movie to the database with title, year, director, genre, and rating
+
+## Data Persistence
+
+Currently, movie data is stored in memory and will be lost when the server restarts. This is suitable for development and testing but would need to be changed for production use.
 
 ## Development Workflow
 
@@ -88,6 +93,9 @@ To test the MCP tools provided by this server:
    
    # Get information about a specific movie
    qwen --prompt "Get information about The Matrix movie" --yolo
+   
+   # Add a new movie
+   qwen --prompt "Add a movie called 'Pulp Fiction' released in 1994, directed by Quentin Tarantino, in the Crime Drama genre, with a rating of 8.9" --yolo
    ```
 
 The Qwen CLI will automatically connect to the server using the configuration in `.qwen/settings.json` and execute the appropriate MCP tools.

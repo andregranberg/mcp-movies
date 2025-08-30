@@ -16,6 +16,78 @@ const server = new McpServer({
   version: '1.0.0',
 });
 
+// In-memory storage for movies (in a real application, this would be a database)
+// Initialize with the existing movies to preserve them
+const movies = {
+  'The Matrix': {
+    title: 'The Matrix',
+    year: 1999,
+    director: 'The Wachowskis',
+    genre: 'Science Fiction',
+    rating: 8.7,
+  },
+  'Inception': {
+    title: 'Inception',
+    year: 2010,
+    director: 'Christopher Nolan',
+    genre: 'Science Fiction',
+    rating: 8.8,
+  },
+  'The Godfather': {
+    title: 'The Godfather',
+    year: 1972,
+    director: 'Francis Ford Coppola',
+    genre: 'Crime Drama',
+    rating: 9.2,
+  },
+};
+
+// Register a tool to add a new movie
+server.registerTool(
+  'add_movie',
+  {
+    description: 'Add a new movie to the database',
+    inputSchema: {
+      title: z.string().describe('The title of the movie'),
+      year: z.number().describe('The release year of the movie'),
+      director: z.string().describe('The director of the movie'),
+      genre: z.string().describe('The genre of the movie'),
+      rating: z.number().describe('The rating of the movie (0-10)'),
+    },
+  },
+  async ({ title, year, director, genre, rating }) => {
+    // Check if movie already exists
+    if (movies[title]) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: `Movie "${title}" already exists in the database.`,
+          },
+        ],
+      };
+    }
+
+    // Add the new movie
+    movies[title] = {
+      title,
+      year,
+      director,
+      genre,
+      rating,
+    };
+
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Movie "${title}" successfully added to the database.`,
+        },
+      ],
+    };
+  }
+);
+
 // Register a simple tool to get movie information
 server.registerTool(
   'get_movie_info',
@@ -26,31 +98,6 @@ server.registerTool(
     },
   },
   async ({ title }) => {
-    // This is a mock implementation - in a real server, you would connect to a database or API
-    const movies = {
-      'The Matrix': {
-        title: 'The Matrix',
-        year: 1999,
-        director: 'The Wachowskis',
-        genre: 'Science Fiction',
-        rating: 8.7,
-      },
-      'Inception': {
-        title: 'Inception',
-        year: 2010,
-        director: 'Christopher Nolan',
-        genre: 'Science Fiction',
-        rating: 8.8,
-      },
-      'The Godfather': {
-        title: 'The Godfather',
-        year: 1972,
-        director: 'Francis Ford Coppola',
-        genre: 'Crime Drama',
-        rating: 9.2,
-      },
-    };
-
     const movie = movies[title];
     if (movie) {
       return {
@@ -82,11 +129,7 @@ server.registerTool(
     inputSchema: {},
   },
   async () => {
-    const movieList = [
-      'The Matrix',
-      'Inception',
-      'The Godfather',
-    ];
+    const movieList = Object.keys(movies);
     
     return {
       content: [
